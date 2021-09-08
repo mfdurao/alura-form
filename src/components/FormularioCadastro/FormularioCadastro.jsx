@@ -1,57 +1,52 @@
-import React from "react";
-import { Button, FormControlLabel, Switch, TextField } from "@material-ui/core";
+import { Step, StepLabel, Stepper, Typography } from "@material-ui/core";
+import React, { useEffect } from "react";
+import { useState } from "react";
 
-export default function FormularioCadastro(params) {
+import DadosEntrega from "./DadosEntrega";
+import DadosPessoais from "./DadosPessoais";
+import DadosUsuario from "./DadosUsuario";
+
+export default function FormularioCadastro({ onSubmit }) {
+  const [etapaAtual, setEtapaAtual] = useState(0);
+  const [dadosColetados, setDados] = useState({});
+  useEffect(() => {
+    if (etapaAtual === formularios.length - 1) {
+      onSubmit(dadosColetados);
+    }
+  });
+  const formularios = [
+    <DadosUsuario onSubmit={coletarDados} />,
+    <DadosPessoais onSubmit={coletarDados} />,
+    <DadosEntrega onSubmit={coletarDados} />,
+    <Typography variant="h5">Obrigado pelo Cadastro!</Typography>,
+  ];
+
+  function coletarDados(dados) {
+    setDados({ ...dadosColetados, ...dados });
+    proximo();
+  }
+
+  function proximo() {
+    setEtapaAtual(etapaAtual + 1);
+  }
+
   return (
-    <form>
-      <TextField
-        id="nome"
-        label="Nome"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        id="sobrenome"
-        label="Sobrenome"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        id="cpf"
-        label="CPF"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />
-
-      <FormControlLabel
-        label="Promoções"
-        control={
-          <Switch
-            name="promocoes"
-            color="primary"
-            defaultChecked
-            type="checkbox"
-          />
-        }
-      />
-     <FormControlLabel
-        label="Novidades"
-        control={
-          <Switch
-            name="novidades"
-            color="primary"
-            defaultChecked
-            type="checkbox"
-          />
-        }
-      />
-
-      <Button type="submit" variant="contained" color="primary">
-        Cadastrar
-      </Button>
-    </form>
+    <div>
+      <Stepper activeStep={etapaAtual}>
+        <Step>
+          <StepLabel>Login</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Pessoal</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Entrega</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Finalização</StepLabel>
+        </Step>
+      </Stepper>
+      {formularios[etapaAtual]}
+    </div>
   );
 }
